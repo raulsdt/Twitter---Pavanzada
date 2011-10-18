@@ -1,0 +1,18 @@
+# mínimo nivel que aparecerá por consola o fichero
+.level= ALL
+
+# mínimo nivel que aparecerá por consola (System.err)
+.console.level= ALL
+
+# mínimo nivel que aparecerá en fichero
+.file.level= SEVERE
+.file.name= J$.log
+
+# mínimo nivel que aparecerá del logger indicado
+# NOMBRE_DEL_LOGGER= NIVEL
+# paquete= nivel
+# paquete.clase= nivel
+# paquete.clase.metodo= nivel
+
+RedSocial= INFO
+

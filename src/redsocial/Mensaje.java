@@ -4,7 +4,8 @@
  */
 
 package redsocial;
-import java.util.Date;
+import java.util.*;
+
 /**
  *
  * @author raul
@@ -12,11 +13,16 @@ import java.util.Date;
 public class Mensaje {
     private Date fecha;
     private String contenido;
+    private Usuario emisor;
+    private boolean  publicMessage; //Lo podria haber realizado tambien con un
+    //enum
 
-    public Mensaje(String contenido){
+
+    public Mensaje(String contenido, Usuario aUsuario){
         fecha= new Date();
         this.setContenido(contenido);
-
+        this.setEmisor(aUsuario);
+        this.publicMessage = true;
     }
 
     /**
@@ -25,12 +31,20 @@ public class Mensaje {
     public Date getFecha() {
         return fecha;
     }
+    
+    public Usuario getEmisor() {
+        return emisor;
+    }
 
     /**
      * @param fecha the fecha to set
      */
     private void setFecha(Date fecha) {
         this.fecha = fecha;
+    }
+    
+    private void setEmisor(Usuario aUsuario) {
+        this.emisor = aUsuario;
     }
 
     /**
@@ -45,5 +59,19 @@ public class Mensaje {
      */
     private void setContenido(String contenido) {
         this.contenido = contenido;
+    }
+
+    /**
+     * @return the publicMessage
+     */
+    public boolean getPublicMessage() {
+        return publicMessage;
+    }
+
+    /**
+     * @param publicMessage the publicMessage to set
+     */
+    public void setPublicMessage(boolean publicMessage) {
+        this.publicMessage = publicMessage;
     }
 }
