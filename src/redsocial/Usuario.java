@@ -104,7 +104,8 @@ public class Usuario {
            }
        } 
        
-        u.getAmigos().add(u);//o push
+        u.getAmigos().add(this);//o push - u  El me añade como amigo a mi
+        amigos.add(u);//Yo lo añado como amigo a él
    }
    
    public void recibirMensaje(Mensaje m){

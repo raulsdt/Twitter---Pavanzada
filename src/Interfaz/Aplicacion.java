@@ -19,7 +19,7 @@ public class Aplicacion {
         InputStreamReader sr = new InputStreamReader(System.in);
         BufferedReader br = new BufferedReader(sr);
 
-        
+
 
         try {
             Usuario usuario = new Usuario();
@@ -70,7 +70,7 @@ public class Aplicacion {
                     usuario = new Usuario(correo, clave, nombre, descripcion);
                     principal.nuevoUsuario(usuario);
                     System.out.println("Introduzca su clave");
-                    //break;
+                //break;
 
             }
 
@@ -90,8 +90,8 @@ public class Aplicacion {
             for (int i = 0; i < tablon.size(); i++) {
                 if (tablon.get(i).getPublicMessage()) {
                     j++;
-                    System.out.println(" <<<<<<<   Mensaje:" + j + "   >>>>>>"
-                            + tablon.get(i).getEmisor() + ":  "
+                    System.out.println(" <<<<<<<   Mensaje:" + j + "   >>>>>> "
+                            + tablon.get(i).getEmisor().getNombre() + ":  "
                             + tablon.get(i).getContenido());
                 }
 
@@ -109,7 +109,7 @@ public class Aplicacion {
                     if (!tablon.get(i).getPublicMessage()) {
                         j++;
                         System.out.println(" <<<<<<<   Mensaje:" + j + "   >>>>>>"
-                                + tablon.get(i).getEmisor() + ":  "
+                                + tablon.get(i).getEmisor().getNombre() + ":  "
                                 + tablon.get(i).getContenido());
                     }
 
@@ -125,6 +125,7 @@ public class Aplicacion {
                 System.out.println("3. Ver la lista de amigos");
                 System.out.println("4. Ver solicitudes de amistad");
                 System.out.println("5. Buscar a un usuario en la red");
+                System.out.println("6. Desea introducir o registrar un nuevo usuario");
                 System.out.println("0. Salir");
                 System.out.println("*********************************************");
 
@@ -176,7 +177,7 @@ public class Aplicacion {
 
                         }
 
-                        System.out.println("¿Desea ver sus mensajes privados? (Si/No)");
+                        System.out.println("¿Desea aceptar a algun usuario? (Si/No)");
                         valida = br.readLine();
                         if (valida.equalsIgnoreCase("Si")) {
                             System.out.println("Escriba el email de la persona a la "
@@ -198,12 +199,13 @@ public class Aplicacion {
                                 + "buscar usuarios en la red");
                         String termino = br.readLine();
                         UsuariosRed = principal.buscarUsuario(termino);
-                        Iterator<Usuario> iterador = UsuariosRed.iterator();
 
-                        while (iterador.hasNext()) {
-                            System.out.println(iterador.next().getNombre() + " - "
-                                    + iterador.next().getEmail() + " - "
-                                    + iterador.next().getDescripcion());
+                            
+                        for(int jj=0;jj<UsuariosRed.size();jj++) {//while(UsuariosRed.iterator().hasNext())
+                            System.out.println(UsuariosRed.iterator().next().getNombre() + " - "
+                                    + UsuariosRed.iterator().next().getEmail() + " - "
+                                    + UsuariosRed.iterator().next().getDescripcion());
+                            UsuariosRed.iterator().next();
                         }
 
                         System.out.println("¿Desea admitir a alguien? (Si/No)");
@@ -216,6 +218,98 @@ public class Aplicacion {
                                 usuario.solicitudAmistad(principal.buscarUsuarioCorreoE(email));
                             } else {
                                 System.out.println("El correo introducido es incorrecto");
+                            }
+                        }
+                        break;
+
+                    case 6:
+                        System.out.println("Esta ya logueado: Introduzca 1, o desea "
+                                + "registrarse: Introduzca 2");
+                        //String opcion = new String();
+
+                        opcion = br.readLine();
+
+
+                        switch (Integer.parseInt(opcion)) {
+                            case 1:
+
+                                do {
+                                    System.out.println("Introduzca su direccion de correo");
+                                    //String correo = new String();
+                                    String correo = br.readLine();
+                                    System.out.println("Introduzca su clave");
+                                    //String clave = new String();
+                                    String clave = br.readLine();
+
+                                    usuario = principal.loginUsuario(correo, clave);
+                                    //System.out.println("adios");
+                                    if (usuario == null) {
+                                        System.out.println("La direccion o contraseña"
+                                                + " introducida no es validad");
+                                    }
+                                } while (usuario == null);
+                                break;
+
+
+                            case 2:
+                                System.out.println("Introduzca su direccion de correo");
+                                //String correo = new String();
+                                String correo = br.readLine();
+                                System.out.println("Introduzca su nombre");
+                                //String nombre = new String();
+                                String nombre = br.readLine();
+                                System.out.println("Introduzca una descripcion");
+                                //String descripcion = new String();
+                                String descripcion = br.readLine();
+                                System.out.println("Introduzca su clave");
+                                //String clave = new String();
+                                String clave = br.readLine();
+
+                                usuario = new Usuario(correo, clave, nombre, descripcion);
+                                principal.nuevoUsuario(usuario);
+                                System.out.println("Introduzca su clave");
+                            //break;
+
+                        }
+                        //***************VISUALIZACION DE DATOS PERSONALES*****************//
+                        System.out.println(" <<<<<<<<<<<<<<<<<<<<<<<< Usuario: "
+                                + usuario.getNombre() + ">>>>>>>>>>>>>>>>>>>>>>>");
+                        System.out.println("Correo " + usuario.getEmail());
+                        System.out.println("Descripcion: " + usuario.getDescripcion());
+
+                        
+                        tablon = usuario.getMensajesRecibidos();
+
+                        //***************VISUALIZACION DE TABLON*****************//
+                        System.out.println("");
+                        System.out.println(" <<<<<<<<<<<<<<<<<<<<<<<<  TABLÓN  >>>>>>>>>>>>>>>>>>>>>>>");
+                        j = 0;
+                        for (int i = 0; i < tablon.size(); i++) {
+                            if (tablon.get(i).getPublicMessage()) {
+                                j++;
+                                System.out.println(" <<<<<<<   Mensaje:" + j + "   >>>>>> "
+                                        + tablon.get(i).getEmisor().getNombre() + ":  "
+                                        + tablon.get(i).getContenido());
+                            }
+
+                        }
+
+                        //***************VISUALIZACION DE MENSAJES PRIVADOS*****************//
+
+                        System.out.println("¿Desea ver sus mensajes privados? (Si/No)");
+                        //String valida = new String();
+                        valida = br.readLine();
+
+                        if (valida.equalsIgnoreCase("Si")) {
+                            j = 0;
+                            for (int i = 0; i < tablon.size(); i++) {
+                                if (!tablon.get(i).getPublicMessage()) {
+                                    j++;
+                                    System.out.println(" <<<<<<<   Mensaje:" + j + "   >>>>>>"
+                                            + tablon.get(i).getEmisor().getNombre() + ":  "
+                                            + tablon.get(i).getContenido());
+                                }
+
                             }
                         }
                         break;
