@@ -2,24 +2,34 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package redsocial;
+
 import java.util.*;
 
 /**
  *
- * @author raul
+ * @author Raul Salazar de Torres
+ * @date 18/10/2011
+ * @signature Programacion Avanzada
+ * @file Mensaje.java
+ * 
  */
 public class Mensaje {
+
     private Date fecha;
     private String contenido;
     private Usuario emisor;
-    private boolean  publicMessage; //Lo podria haber realizado tambien con un
+    private boolean publicMessage; //Lo podria haber realizado tambien con un
     //enum
 
-
-    public Mensaje(String contenido, Usuario aUsuario){
-        fecha= new Date();
+    /**
+     * @see Constructor de Mensaje
+     * @param contenido Texto del mensaje
+     * @param aUsuario Emisor del mensaje
+     * @exception Ambos cambos son obligatorios
+     */
+    public Mensaje(String contenido, Usuario aUsuario) {
+        fecha = new Date();
         this.setContenido(contenido);
         this.setEmisor(aUsuario);
         this.publicMessage = true;
@@ -31,7 +41,7 @@ public class Mensaje {
     public Date getFecha() {
         return fecha;
     }
-    
+
     public Usuario getEmisor() {
         return emisor;
     }
@@ -42,7 +52,7 @@ public class Mensaje {
     private void setFecha(Date fecha) {
         this.fecha = fecha;
     }
-    
+
     private void setEmisor(Usuario aUsuario) {
         this.emisor = aUsuario;
     }
