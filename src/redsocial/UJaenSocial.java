@@ -19,14 +19,14 @@ public class UJaenSocial {
      */
     private static final Logger LOGGER = Logger.getLogger("RedSocial"); //Logger 
     //para almacenar las trazas durante todo el documento
-    private List<Usuario> Usuarios;
+    private HashMap<String, Usuario> Usuarios;
     private static List<Mensaje> Mensajes;
 
     /**
      * @see Contructor de la clase
      */
     public UJaenSocial() {
-        Usuarios = new ArrayList<Usuario>();
+        Usuarios = new HashMap<String, Usuario>();
         Mensajes = new ArrayList<Mensaje>();
 
     }
@@ -37,7 +37,7 @@ public class UJaenSocial {
      * @throws Campos anteriores requeridos de forma obligatoria
      */
     public void nuevoUsuario(Usuario u) {
-        Usuarios.add(u);
+        Usuarios.put(u.getEmail(), u);
 
     }
 
@@ -51,21 +51,19 @@ public class UJaenSocial {
     public Collection<Usuario> buscarUsuario(String Termino) {
 
         LinkedList<Usuario> devolucion = new LinkedList<Usuario>();
-        //ListIterator<Usuario> iterador = Usuarios.listIterator();
+        Iterator it = Usuarios.entrySet().iterator();
 
-        for (int i = 0; i < Usuarios.size(); i++) {
-            if (Usuarios.get(i).getDescripcion().contains(Termino)
-                    || Usuarios.get(i).getNombre().contains(Termino)) {
-                devolucion.add(Usuarios.get(i));
+        Map.Entry e;
+        Usuario o = new Usuario();
+        while (it.hasNext()) {
+            e = (Map.Entry) it.next();
+            o = (Usuario) e.getValue();
+            if (o.getDescripcion().contains(Termino)
+                    || o.getNombre().contains(Termino)) {
+                devolucion.add(o);
             }
+
         }
-        /* while (iterador.hasNext()) {
-        if (iterador.next().getDescripcion().contains(Termino)
-        || iterador.next().getNombre().contains(Termino)) {
-        devolucion.add(iterador.next());
-        }
-        
-        }*/
         return devolucion;
 
     }
@@ -77,19 +75,8 @@ public class UJaenSocial {
      */
     public Usuario buscarUsuarioCorreoE(String CorreoE) {
 
-        for (int it = 0; it < Usuarios.size(); it++) {
-            if (Usuarios.get(it).getEmail().equalsIgnoreCase(CorreoE)) {
-                return Usuarios.get(it);
-            }
-        }
-        /*ListIterator<Usuario> iterador = Usuarios.listIterator();
-        
-        while (iterador.hasNext()) {
-        if (iterador.next().getEmail().equalsIgnoreCase(CorreoE)) {
-        return iterador.next();
-        }
-        }*/
-        return null;
+        return Usuarios.get(CorreoE);
+
 
     }
 
@@ -102,22 +89,9 @@ public class UJaenSocial {
      */
     public Usuario loginUsuario(String email, String clave) {
 
-        //ListIterator<Usuario> iterador = Usuarios.listIterator();
-        boolean encontrado = false;
-        int i = 0;
-
-        while (!encontrado && i < Usuarios.size()) {
-            if (Usuarios.get(i).getEmail().equalsIgnoreCase(email)) {
-                if (Usuarios.get(i).claveValida(clave)) {
-                    return Usuarios.get(i);
-                }
-                encontrado = true;
-            } else {
-                i++;
-            }
-        }
-
-        return null;
+      
+        if(Usuarios.get(email).claveValida(clave)) return Usuarios.get(email);
+        else return null;
     }
 
     /**
