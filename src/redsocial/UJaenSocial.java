@@ -26,6 +26,8 @@ public class UJaenSocial {
      * @see Contructor de la clase
      */
     public UJaenSocial() {
+        LOGGER.info("Inicializamos la clase UJAEN");
+        
         Usuarios = new HashMap<String, Usuario>();
         Mensajes = new ArrayList<Mensaje>();
 
@@ -37,6 +39,7 @@ public class UJaenSocial {
      * @throws Campos anteriores requeridos de forma obligatoria
      */
     public void nuevoUsuario(Usuario u) {
+        LOGGER.info("Introducido al usuario: " + u.getEmail());
         Usuarios.put(u.getEmail(), u);
 
     }
@@ -49,7 +52,7 @@ public class UJaenSocial {
      * dicho valor de busqueda -> Termino
      */
     public Collection<Usuario> buscarUsuario(String Termino) {
-
+        LOGGER.info("Buscando usuario por: " + Termino);
         LinkedList<Usuario> devolucion = new LinkedList<Usuario>();
         Iterator it = Usuarios.entrySet().iterator();
 
@@ -89,7 +92,7 @@ public class UJaenSocial {
      */
     public Usuario loginUsuario(String email, String clave) {
 
-      
+        LOGGER.info("Logueando al usuario" + email);
         if(Usuarios.get(email).claveValida(clave)) return Usuarios.get(email);
         else return null;
     }

@@ -5,6 +5,7 @@
 package redsocial;
 
 import java.util.*;
+import Utilidades.Logger;
 
 /**
  *
@@ -15,7 +16,7 @@ import java.util.*;
  * 
  */
 public class Usuario {
-
+    private static final Logger LOGGER = Logger.getLogger("RedSocial"); //Logger
     private String email; //Correo electronico del usuario
     private String clave; // Clave del usuario
     private String nombre; //Nombre del usuario
@@ -88,7 +89,7 @@ public class Usuario {
      * @param msg Contenido del mensaje (texto)
      */
     public void mensajeMuro(String msg) {
-
+        LOGGER.info("Nuevo mensaje en el muro" + msg);
         Mensaje mensaje = new Mensaje(msg, this);
         for (int i = 0; i < getAmigos().size(); i++) {
             UJaenSocial.nuevoMensaje(mensaje);//Agregar el mensaje dentro de la clase UJaenSocial
@@ -105,10 +106,14 @@ public class Usuario {
      * @throws Los campos anteriores son obligatorios
      */
     public void mensajeAmigo(String msg, Usuario amigo) {
-
-        MensajePrivado mensajePrivado = new MensajePrivado(msg, this, amigo);
-        UJaenSocial.nuevoMensaje(mensajePrivado);//Agregar el mensaje dentro de la clase UJaenSocial
-        amigo.recibirMensaje(mensajePrivado);     //Llamada a recibir mensaje
+        try {
+            LOGGER.info("Mensaje privado" + amigo.getEmail() + " : "+ msg);
+            MensajePrivado mensajePrivado = new MensajePrivado(msg, this, amigo);
+            UJaenSocial.nuevoMensaje(mensajePrivado);//Agregar el mensaje dentro de la clase UJaenSocial
+            amigo.recibirMensaje(mensajePrivado);     //Llamada a recibir mensaje
+        } catch (Exception e) {
+            System.out.println("No se puede enviar ningun mensaje");
+        }
     }
 
     /**
@@ -124,19 +129,24 @@ public class Usuario {
      * @param Usuario a admitir
      */
     public void admitirAmigo(Usuario u) {//Acepto la solicitud de amistad de otra persona
-        ListIterator<Usuario> iterador = u.getSolicitudesAmistad().listIterator();
-        boolean encontrado = false;
+        try {
+            LOGGER.info("Admitir a amigo: " + email);
+            ListIterator<Usuario> iterador = u.getSolicitudesAmistad().listIterator();
+            boolean encontrado = false;
 
 
-        while (!encontrado && iterador.hasNext()) {
-            if (iterador.next().equals(u)) {
-                encontrado = true;
-                iterador.remove();
+            while (!encontrado && iterador.hasNext()) {
+                if (iterador.next().equals(u)) {
+                    encontrado = true;
+                    iterador.remove();
+                }
             }
-        }
 
-        u.getAmigos().add(this);//o push - u  El me añade como amigo a mi
-        amigos.add(u);//Yo lo añado como amigo a él
+            u.getAmigos().add(this);//o push - u  El me añade como amigo a mi
+            amigos.add(u);//Yo lo añado como amigo a él
+        } catch (Exception e) {
+            System.out.println("Error al admitir amigo");
+        }
     }
 
     /**
@@ -145,6 +155,7 @@ public class Usuario {
      */
     public void recibirMensaje(Mensaje m) {
         getMensajesRecibidos().add(m);// o push
+        LOGGER.info("Usuario: " + getEmail() + " recibe: " + m.getContenido());
 
     }
 

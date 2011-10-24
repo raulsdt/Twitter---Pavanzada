@@ -2,7 +2,8 @@
 .level= ALL
 
 # mínimo nivel que aparecerá por consola (System.err)
-.console.level= ALL
+.console.level= SEVERE
+#ALL
 
 # mínimo nivel que aparecerá en fichero
 .file.level= INFO

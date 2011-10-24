@@ -16,10 +16,33 @@ import java.util.*;
 import redsocial.*;
 import java.io.*;
 import Utilidades.SHA1;
+import java.io.Console;
 
 public final class controlador {
 
     private static redsocial.UJaenSocial principal = new UJaenSocial();
+
+    /**
+     * @see Lee clave cifrada desde la consola
+     * @return La clave captada
+     */
+    private static String leerClave() {
+        try {
+            char[] clave = new char[50];
+            Console console = System.console();
+            if (console == null) {
+                System.err.println("No puedo obtener la consola.");
+            }
+            clave = console.readPassword("Introduzca la contraseña");
+
+
+            System.out.println(clave);
+            return clave.toString();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        return null;
+    }
 
     /**
      * @see Logueamos e mostramos la informacion inicial del usuario
@@ -31,14 +54,14 @@ public final class controlador {
 
         try {
             Usuario usuario = new Usuario();
-            //UJaenSocial principal = new UJaenSocial();
+            String opcion;
 
+            do {
+                System.out.println("Esta ya logueado: Introduzca 1, o desea "
+                        + "registrarse: Introduzca 2");
 
-            System.out.println("Esta ya logueado: Introduzca 1, o desea "
-                    + "registrarse: Introduzca 2");
-
-            String opcion = br.readLine();
-
+                opcion = br.readLine();
+            } while (Integer.parseInt(opcion) > 2);
 
             switch (Integer.parseInt(opcion)) {
                 case 1:
@@ -47,9 +70,10 @@ public final class controlador {
                         System.out.println("Introduzca su direccion de correo");
                         String correo = br.readLine();
 
-                        System.out.println("Introduzca su clave");
-                        String clave = br.readLine();
-
+                        //System.out.println("Introduzca su clave");
+                        //String clave = br.readLine();
+                        String clave = leerClave();
+                        
                         //Adaptacion a SHA1 
                         usuario = principal.loginUsuario(correo, SHA1.encriptarBase64(clave));
                         if (usuario == null) {
@@ -70,13 +94,13 @@ public final class controlador {
                     System.out.println("Introduzca una descripcion");
                     String descripcion = br.readLine();
 
-                    System.out.println("Introduzca su clave");
-                    String clave = br.readLine();
+                    //System.out.println("Introduzca su clave");
+                    // String clave = br.readLine();
+                    String clave = leerClave();
 
                     //Adaptacion a SHA1
                     usuario = new Usuario(correo, SHA1.encriptarBase64(clave), nombre, descripcion);
                     principal.nuevoUsuario(usuario);
-                    System.out.println("Introduzca su clave");
                     break;
 
             }
@@ -105,9 +129,11 @@ public final class controlador {
             }
 
             //***************VISUALIZACION DE MENSAJES PRIVADOS*****************//
-
-            System.out.println("¿Desea ver sus mensajes privados? (Si/No)");
-            String valida = br.readLine();
+            String valida;
+            do {
+                System.out.println("¿Desea ver sus mensajes privados? (Si/No)");
+                valida = br.readLine();
+            } while (!valida.equalsIgnoreCase("Si") && !valida.equalsIgnoreCase("No"));
 
             if (valida.equalsIgnoreCase("Si")) {
                 j = 0;
@@ -126,35 +152,41 @@ public final class controlador {
             return usuario;
 
         } catch (Exception e) {
+
+            System.out.println("Los datos introducidos no son correctos: " + e.getMessage());
+            return logueoRegistroInit();
         }
-        return null;
+        //return null;
     }
 
     /**
      * @see Función inicial de todo el sistema, posee toda la funcionalidad.
      */
     public static void initialise() {
-        InputStreamReader sr = new InputStreamReader(System.in);
-        BufferedReader br = new BufferedReader(sr);
-
-        Usuario usuario = new Usuario();
-        usuario = logueoRegistroInit();
-
-        String eleccion, valida;
         try {
-            do {
-                /************MUESTRA DIVERSAS OPCIONES A REALIZAR****************/
-                System.out.println("Indique que opcion desea realizar:");
-                System.out.println("1. Enviar un mensaje a mi muro");
-                System.out.println("2. Enviar un mensaje privado a un amigo");
-                System.out.println("3. Ver la lista de amigos");
-                System.out.println("4. Ver solicitudes de amistad");
-                System.out.println("5. Buscar a un usuario en la red");
-                System.out.println("6. Desea introducir o registrar un nuevo usuario");
-                System.out.println("0. Salir");
-                System.out.println("*********************************************");
+            InputStreamReader sr = new InputStreamReader(System.in);
+            BufferedReader br = new BufferedReader(sr);
 
-                eleccion = br.readLine();
+            Usuario usuario = new Usuario();
+            usuario = logueoRegistroInit();
+
+            String eleccion, valida;
+
+            do {
+                do {
+                    /************MUESTRA DIVERSAS OPCIONES A REALIZAR****************/
+                    System.out.println("Indique que opcion desea realizar:");
+                    System.out.println("1. Enviar un mensaje a mi muro");
+                    System.out.println("2. Enviar un mensaje privado a un amigo");
+                    System.out.println("3. Ver la lista de amigos");
+                    System.out.println("4. Ver solicitudes de amistad");
+                    System.out.println("5. Buscar a un usuario en la red");
+                    System.out.println("6. Desea introducir o registrar un nuevo usuario");
+                    System.out.println("0. Salir");
+                    System.out.println("*********************************************");
+
+                    eleccion = br.readLine();
+                } while (Integer.parseInt(eleccion) > 6);
 
                 switch (Integer.parseInt(eleccion)) {
                     case 1://Mensaje al muro
@@ -189,7 +221,9 @@ public final class controlador {
 
 
 
-        } catch (Exception e) {
+        } catch (Exception ex) {
+            System.out.println("El valor introducido no es correcto");
+            initialise();
         }
     }
 
@@ -206,7 +240,8 @@ public final class controlador {
             String msg = br.readLine();
             usuario.mensajeMuro(msg);
 
-        } catch (Exception e) {
+        } catch (IOException e) {
+            System.out.println("Error en: " + e.getMessage());;
         }
     }
 
@@ -220,14 +255,19 @@ public final class controlador {
             System.out.println("Escriba el mensaje privado que quiere "
                     + "enviar");
             String msg_private = br.readLine();
+            String email;
+            do {
+                System.out.println("Escriba el email de la persona a la que"
+                        + " le quiere enviar el mensaje");
+                email = br.readLine();
+            } while (principal.buscarUsuarioCorreoE(email) == null);
 
-            System.out.println("Escriba el email de la persona a la que"
-                    + " le quiere enviar el mensaje");
-            String email = br.readLine();
             usuario.mensajeAmigo(msg_private,
                     principal.buscarUsuarioCorreoE(email));//Voy a poner
             //que busca por su correo electronico
         } catch (Exception e) {
+            System.out.println("El correo introducido es incorrecto");
+            MensajePrivado(usuario, br);
         }
     }
 
@@ -252,6 +292,7 @@ public final class controlador {
 
             System.out.println("");
         } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -275,20 +316,24 @@ public final class controlador {
                         + Peticiones.get(k).getDescripcion());
 
             }
+            do {
+                System.out.println("¿Desea aceptar a algun usuario? (Si/No)");
+                valida = br.readLine();
+            } while (!valida.equalsIgnoreCase("Si") && !valida.equalsIgnoreCase("No"));
 
-            System.out.println("¿Desea aceptar a algun usuario? (Si/No)");
-            valida = br.readLine();
             if (valida.equalsIgnoreCase("Si")) {
-                System.out.println("Escriba el email de la persona a la "
-                        + "que desea aceptar");
-                email = br.readLine();
-                if (principal.buscarUsuarioCorreoE(email) != null) {
-                    usuario.admitirAmigo(principal.buscarUsuarioCorreoE(email));
-                } else {
-                    System.out.println("La direccion introducida es incorrecta");
-                }
+                do {
+                    System.out.println("Escriba el email de la persona a la "
+                            + "que desea aceptar");
+                    email = br.readLine();
+                } while (principal.buscarUsuarioCorreoE(email) == null);
+
+                usuario.admitirAmigo(principal.buscarUsuarioCorreoE(email));
+
             }
         } catch (Exception e) {
+            System.out.println("El dato introducido no es correcto: " + e.getMessage());
+            MostratSolicitudesAmistad(usuario, br);
         }
     }
 
@@ -316,20 +361,27 @@ public final class controlador {
                         + u.get(jj).getEmail() + " - "
                         + u.get(jj).getDescripcion());
             }
+            do {
+                System.out.println("¿Desea admitir a alguien? (Si/No)");
+                valida = br.readLine();
+            } while (!valida.equalsIgnoreCase("Si") && !valida.equalsIgnoreCase("No"));
 
-            System.out.println("¿Desea admitir a alguien? (Si/No)");
-            valida = br.readLine();
             if (valida.equalsIgnoreCase("Si")) {
-                System.out.println("Escriba el email de la persona a la "
-                        + "que desea aceptar");
-                email = br.readLine();
-                if (principal.buscarUsuarioCorreoE(email) != null) {
-                    usuario.solicitudAmistad(principal.buscarUsuarioCorreoE(email));
-                } else {
-                    System.out.println("El correo introducido es incorrecto");
-                }
+                do {
+                    System.out.println("Escriba el email de la persona a la "
+                            + "que desea aceptar");
+                    email = br.readLine();
+
+                    if (principal.buscarUsuarioCorreoE(email) != null) {
+                        usuario.solicitudAmistad(principal.buscarUsuarioCorreoE(email));
+                    } else {
+                        System.out.println("El correo introducido es incorrecto");
+                    }
+                } while (principal.buscarUsuarioCorreoE(email) == null);
             }
         } catch (Exception e) {
+            System.out.println("El dato introducido no es correcto " + e.getMessage());
+            BuscarUsuariosRed(usuario, br);
         }
     }
 }
