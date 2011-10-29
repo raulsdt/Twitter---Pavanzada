@@ -26,7 +26,6 @@ public class MensajePrivado extends Mensaje {
     public MensajePrivado(String Contenido, Usuario emisor, Usuario ereceptor) {
         super(Contenido, emisor); //Llamada al contructor de la superclase
         setReceptor(ereceptor);
-        setPublicMessage(false);
     }
 
     /**

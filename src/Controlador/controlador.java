@@ -119,7 +119,7 @@ public final class controlador {
             System.out.println(" <<<<<<<<<<<<<<<<<<<<<<<<  TABLÓN  >>>>>>>>>>>>>>>>>>>>>>>");
             int j = 0;
             for (int i = 0; i < tablon.size(); i++) {
-                if (tablon.get(i).getPublicMessage()) {
+                if (tablon.get(i) instanceof Mensaje) {
                     j++;
                     System.out.println(" <<<<<<<   Mensaje:" + j + "   >>>>>> "
                             + tablon.get(i).getEmisor().getNombre() + ":  "
@@ -138,7 +138,7 @@ public final class controlador {
             if (valida.equalsIgnoreCase("Si")) {
                 j = 0;
                 for (int i = 0; i < tablon.size(); i++) {
-                    if (!tablon.get(i).getPublicMessage()) {
+                    if (tablon.get(i) instanceof MensajePrivado) {
                         j++;
                         System.out.println(" <<<<<<<   Mensaje:" + j + "   >>>>>>"
                                 + tablon.get(i).getEmisor().getNombre() + ":  "
