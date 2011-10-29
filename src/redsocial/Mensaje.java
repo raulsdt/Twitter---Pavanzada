@@ -19,8 +19,7 @@ public class Mensaje {
     private Date fecha;
     private String contenido;
     private Usuario emisor;
-    private boolean publicMessage; //Lo podria haber realizado tambien con un
-    //enum
+
 
     /**
      * @see Constructor de Mensaje
@@ -32,7 +31,7 @@ public class Mensaje {
         fecha = new Date();
         this.setContenido(contenido);
         this.setEmisor(aUsuario);
-        this.publicMessage = true;
+
     }
 
     /**
