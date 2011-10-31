@@ -28,16 +28,12 @@ public final class controlador {
      */
     private static String leerClave() {
         try {
-            char[] clave = new char[50];
             Console console = System.console();
             if (console == null) {
                 System.err.println("No puedo obtener la consola.");
             }
-            clave = console.readPassword("Introduzca la contraseña");
+            return new String(console.readPassword("Introduzca la contraseña"));
 
-
-            System.out.println(clave);
-            return clave.toString();
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
