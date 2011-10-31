@@ -35,28 +35,30 @@ public class Mensaje {
     }
 
     /**
+     * @see Obtiene la fecha del mensaje
      * @return the fecha
      */
     public Date getFecha() {
         return fecha;
     }
 
+    /**
+     * @see Obtiene el emisor del mensaje
+     * @return Usuario que envia este mensaje
+     */ 
     public Usuario getEmisor() {
         return emisor;
     }
 
     /**
-     * @param fecha the fecha to set
-     */
-    private void setFecha(Date fecha) {
-        this.fecha = fecha;
-    }
-
+     * @see Introduce el emisor del mensaje
+     */ 
     private void setEmisor(Usuario aUsuario) {
         this.emisor = aUsuario;
     }
 
     /**
+     * @see Obtiene el contenido del mensaje
      * @return the contenido
      */
     public String getContenido() {
@@ -64,23 +66,12 @@ public class Mensaje {
     }
 
     /**
+     * @see Permite introducir el contenido del mensaje
      * @param contenido the contenido to set
      */
     private void setContenido(String contenido) {
         this.contenido = contenido;
     }
 
-    /**
-     * @return the publicMessage
-     */
-    public boolean getPublicMessage() {
-        return publicMessage;
-    }
 
-    /**
-     * @param publicMessage the publicMessage to set
-     */
-    public void setPublicMessage(boolean publicMessage) {
-        this.publicMessage = publicMessage;
-    }
 }
