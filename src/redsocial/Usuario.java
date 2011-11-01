@@ -16,6 +16,7 @@ import Utilidades.Logger;
  * 
  */
 public class Usuario {
+
     private static final Logger LOGGER = Logger.getLogger("RedSocial"); //Logger
     private String email; //Correo electronico del usuario
     private String clave; // Clave del usuario
@@ -107,7 +108,7 @@ public class Usuario {
      */
     public void mensajeAmigo(String msg, Usuario amigo) {
         try {
-            LOGGER.info("Mensaje privado" + amigo.getEmail() + " : "+ msg);
+            LOGGER.info("Mensaje privado" + amigo.getEmail() + " : " + msg);
             MensajePrivado mensajePrivado = new MensajePrivado(msg, this, amigo);
             UJaenSocial.nuevoMensaje(mensajePrivado);//Agregar el mensaje dentro de la clase UJaenSocial
             amigo.recibirMensaje(mensajePrivado);     //Llamada a recibir mensaje
@@ -154,12 +155,20 @@ public class Usuario {
      * @param m Mensaje a recibir
      */
     public void recibirMensaje(Mensaje m) {
-        getMensajesRecibidos().add(m);// o push
-        LOGGER.info("Usuario: " + getEmail() + " recibe: " + m.getContenido());
+        try {
+            if (m == null) {
+                throw new Exception();
+            }
+            getMensajesRecibidos().add(m);// o push
+            LOGGER.info("Usuario: " + getEmail() + " recibe: " + m.getContenido());
+        } catch (Exception e) {
+            System.out.println("recibirMensaje: No se ha recibido ningun mensaje");
+        }
 
     }
 
     /**
+     * Nos muestra el email
      * @return the email
      */
     public String getEmail() {
@@ -167,6 +176,7 @@ public class Usuario {
     }
 
     /**
+     * Inserta el email del usuario
      * @param email the email to set
      */
     public void setEmail(String email) {
@@ -174,6 +184,7 @@ public class Usuario {
     }
 
     /**
+     * Nos ofrece la clave del usuario
      * @return the clave
      */
     public String getClave() {
@@ -181,6 +192,7 @@ public class Usuario {
     }
 
     /**
+     * Nos permite establecer la contraseña del usuario
      * @param clave the clave to set
      */
     public void setClave(String clave) {
@@ -188,6 +200,7 @@ public class Usuario {
     }
 
     /**
+     * Nos muestra la descripcion del usuario
      * @return the descripcion
      */
     public String getDescripcion() {
@@ -195,6 +208,7 @@ public class Usuario {
     }
 
     /**
+     * 
      * @param descripcion the descripcion to set
      */
     public void setDescripcion(String descripcion) {
@@ -202,6 +216,7 @@ public class Usuario {
     }
 
     /**
+     * Nos aporta la lista de solicitudes de amistad de un usuario
      * @return the solicitudesAmistad
      */
     public LinkedList<Usuario> getSolicitudesAmistad() {
@@ -209,6 +224,7 @@ public class Usuario {
     }
 
     /**
+     * Nos aporta la lista de amigos de un usuario
      * @return the amigos
      */
     public LinkedList<Usuario> getAmigos() {
@@ -216,6 +232,7 @@ public class Usuario {
     }
 
     /**
+     * Obtener la lista de mensajes recibidos
      * @return the mensajesRecibidos
      */
     public LinkedList<Mensaje> getMensajesRecibidos() {
@@ -223,6 +240,7 @@ public class Usuario {
     }
 
     /**
+     * Devuelve el nombre de usuario
      * @return the nombre
      */
     public String getNombre() {

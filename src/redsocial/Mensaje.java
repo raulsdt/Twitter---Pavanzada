@@ -22,7 +22,7 @@ public class Mensaje {
 
 
     /**
-     * @see Constructor de Mensaje
+     * Constructor de Mensaje
      * @param contenido Texto del mensaje
      * @param aUsuario Emisor del mensaje
      * @exception Ambos cambos son obligatorios
@@ -35,7 +35,7 @@ public class Mensaje {
     }
 
     /**
-     * @see Obtiene la fecha del mensaje
+     * Obtiene la fecha del mensaje
      * @return the fecha
      */
     public Date getFecha() {
@@ -43,7 +43,7 @@ public class Mensaje {
     }
 
     /**
-     * @see Obtiene el emisor del mensaje
+     * Obtiene el emisor del mensaje
      * @return Usuario que envia este mensaje
      */ 
     public Usuario getEmisor() {
@@ -51,14 +51,14 @@ public class Mensaje {
     }
 
     /**
-     * @see Introduce el emisor del mensaje
+     * Introduce el emisor del mensaje
      */ 
     private void setEmisor(Usuario aUsuario) {
         this.emisor = aUsuario;
     }
 
     /**
-     * @see Obtiene el contenido del mensaje
+     * Obtiene el contenido del mensaje
      * @return the contenido
      */
     public String getContenido() {
@@ -66,7 +66,7 @@ public class Mensaje {
     }
 
     /**
-     * @see Permite introducir el contenido del mensaje
+     *  Permite introducir el contenido del mensaje
      * @param contenido the contenido to set
      */
     private void setContenido(String contenido) {

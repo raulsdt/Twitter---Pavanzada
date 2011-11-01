@@ -92,7 +92,7 @@ public class UJaenSocial {
      */
     public Usuario loginUsuario(String email, String clave) {
 
-        LOGGER.info("Logueando al usuario" + email);
+        LOGGER.info("Logueando al usuario: " + email);
         if(Usuarios.get(email).claveValida(clave)) return Usuarios.get(email);
         else return null;
     }
