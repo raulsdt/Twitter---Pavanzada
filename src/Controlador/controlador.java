@@ -57,7 +57,7 @@ public final class controlador {
                         + "registrarse: Introduzca 2");
 
                 opcion = br.readLine();
-            } while (Integer.parseInt(opcion) > 2);
+            } while (Integer.parseInt(opcion) > 2 || Integer.parseInt(opcion) <= 0);
 
             switch (Integer.parseInt(opcion)) {
                 case 1:
@@ -69,7 +69,7 @@ public final class controlador {
                         //System.out.println("Introduzca su clave");
                         //String clave = br.readLine();
                         String clave = leerClave();
-                        
+
                         //Adaptacion a SHA1 
                         usuario = principal.loginUsuario(correo, SHA1.encriptarBase64(clave));
                         if (usuario == null) {
@@ -104,8 +104,10 @@ public final class controlador {
             //***************VISUALIZACION DE DATOS PERSONALES*****************//
             System.out.println(" <<<<<<<<<<<<<<<<<<<<<<<< Usuario: "
                     + usuario.getNombre() + ">>>>>>>>>>>>>>>>>>>>>>>");
+            System.out.println("");
             System.out.println("Correo " + usuario.getEmail());
             System.out.println("Descripcion: " + usuario.getDescripcion());
+            System.out.println("");;
 
             LinkedList<Mensaje> tablon = new LinkedList<Mensaje>();
             tablon = usuario.getMensajesRecibidos();
@@ -113,11 +115,12 @@ public final class controlador {
             //***************VISUALIZACION DE TABLON*****************//
             System.out.println("");
             System.out.println(" <<<<<<<<<<<<<<<<<<<<<<<<  TABLÓN  >>>>>>>>>>>>>>>>>>>>>>>");
+            System.out.println("");
             int j = 0;
             for (int i = 0; i < tablon.size(); i++) {
-                if (tablon.get(i) instanceof Mensaje) {
+                if (!(tablon.get(i) instanceof MensajePrivado)) {
                     j++;
-                    System.out.println(" <<<<<<<   Mensaje:" + j + "   >>>>>> "
+                    System.out.println(" <<<<<<<     Mensaje:" + j + "   >>>>>> "
                             + tablon.get(i).getEmisor().getNombre() + ":  "
                             + tablon.get(i).getContenido());
                 }
@@ -136,8 +139,9 @@ public final class controlador {
                 for (int i = 0; i < tablon.size(); i++) {
                     if (tablon.get(i) instanceof MensajePrivado) {
                         j++;
-                        System.out.println(" <<<<<<<   Mensaje:" + j + "   >>>>>>"
-                                + tablon.get(i).getEmisor().getNombre() + ":  "
+                        System.out.println(" <<<<<<<     Mensaje:" + j + "   >>>>>> "
+                                + tablon.get(i).getEmisor().getNombre() + " -  "
+                                + tablon.get(i).getFecha() + " : "
                                 + tablon.get(i).getContenido());
                     }
 
@@ -312,20 +316,22 @@ public final class controlador {
                         + Peticiones.get(k).getDescripcion());
 
             }
-            do {
-                System.out.println("¿Desea aceptar a algun usuario? (Si/No)");
-                valida = br.readLine();
-            } while (!valida.equalsIgnoreCase("Si") && !valida.equalsIgnoreCase("No"));
-
-            if (valida.equalsIgnoreCase("Si")) {
+            if (Peticiones.size() > 0) {
                 do {
-                    System.out.println("Escriba el email de la persona a la "
-                            + "que desea aceptar");
-                    email = br.readLine();
-                } while (principal.buscarUsuarioCorreoE(email) == null);
+                    System.out.println("¿Desea aceptar a algun usuario? (Si/No)");
+                    valida = br.readLine();
+                } while (!valida.equalsIgnoreCase("Si") && !valida.equalsIgnoreCase("No"));
 
-                usuario.admitirAmigo(principal.buscarUsuarioCorreoE(email));
+                if (valida.equalsIgnoreCase("Si")) {
+                    do {
+                        System.out.println("Escriba el email de la persona a la "
+                                + "que desea aceptar");
+                        email = br.readLine();
+                    } while (principal.buscarUsuarioCorreoE(email) == null);
 
+                    usuario.admitirAmigo(principal.buscarUsuarioCorreoE(email));
+
+                }
             }
         } catch (Exception e) {
             System.out.println("El dato introducido no es correcto: " + e.getMessage());
@@ -350,30 +356,35 @@ public final class controlador {
 
             UsuariosRed = principal.buscarUsuario(termino);
             LinkedList<Usuario> u = (LinkedList<Usuario>) UsuariosRed;
-
+            int cantidad = 0;
 
             for (int jj = 0; jj < u.size(); jj++) {
-                System.out.println(u.get(jj).getNombre() + " - "
-                        + u.get(jj).getEmail() + " - "
-                        + u.get(jj).getDescripcion());
+                if (!u.get(jj).equals(usuario)) {
+                    System.out.println(u.get(jj).getNombre() + " - "
+                            + u.get(jj).getEmail() + " - "
+                            + u.get(jj).getDescripcion());
+                    cantidad++;
+                }
             }
-            do {
-                System.out.println("¿Desea admitir a alguien? (Si/No)");
-                valida = br.readLine();
-            } while (!valida.equalsIgnoreCase("Si") && !valida.equalsIgnoreCase("No"));
-
-            if (valida.equalsIgnoreCase("Si")) {
+            if (cantidad > 0) {
                 do {
-                    System.out.println("Escriba el email de la persona a la "
-                            + "que desea aceptar");
-                    email = br.readLine();
+                    System.out.println("¿Desea admitir a alguien? (Si/No)");
+                    valida = br.readLine();
+                } while (!valida.equalsIgnoreCase("Si") && !valida.equalsIgnoreCase("No"));
 
-                    if (principal.buscarUsuarioCorreoE(email) != null) {
-                        usuario.solicitudAmistad(principal.buscarUsuarioCorreoE(email));
-                    } else {
-                        System.out.println("El correo introducido es incorrecto");
-                    }
-                } while (principal.buscarUsuarioCorreoE(email) == null);
+                if (valida.equalsIgnoreCase("Si")) {
+                    do {
+                        System.out.println("Escriba el email de la persona a la "
+                                + "que desea aceptar");
+                        email = br.readLine();
+
+                        if (principal.buscarUsuarioCorreoE(email) != null) {
+                            usuario.solicitudAmistad(principal.buscarUsuarioCorreoE(email));
+                        } else {
+                            System.out.println("El correo introducido es incorrecto");
+                        }
+                    } while (principal.buscarUsuarioCorreoE(email) == null);
+                }
             }
         } catch (Exception e) {
             System.out.println("El dato introducido no es correcto " + e.getMessage());

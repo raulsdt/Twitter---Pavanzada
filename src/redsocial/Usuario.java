@@ -145,6 +145,8 @@ public class Usuario {
 
             u.getAmigos().add(this);//o push - u  El me añade como amigo a mi
             amigos.add(u);//Yo lo añado como amigo a él
+            solicitudesAmistad.remove(solicitudesAmistad.lastIndexOf(u));
+            
         } catch (Exception e) {
             System.out.println("Error al admitir amigo");
         }
