@@ -8,6 +8,7 @@ package redsocial;
  * @file UJaenSocial.java
  * 
  */
+import Excepciones.NoExisteUsuario;
 import Utilidades.Logger;
 import java.util.*;
 import java.util.List;
@@ -27,7 +28,7 @@ public class UJaenSocial {
      */
     public UJaenSocial() {
         LOGGER.info("Inicializamos la clase UJAEN");
-        
+
         Usuarios = new HashMap<String, Usuario>();
         Mensajes = new ArrayList<Mensaje>();
 
@@ -90,11 +91,18 @@ public class UJaenSocial {
      * @return Devuelve el usuario logueado o null en caso de que algunos de los 
      * parametros anteriores sean incorrectos
      */
-    public Usuario loginUsuario(String email, String clave) {
+    public Usuario loginUsuario(String email, String clave) throws NoExisteUsuario {
 
         LOGGER.info("Logueando al usuario: " + email);
-        if(Usuarios.get(email).claveValida(clave)) return Usuarios.get(email);
-        else return null;
+        if (buscarUsuarioCorreoE(email) != null) {
+            if (Usuarios.get(email).claveValida(clave)) {
+                return Usuarios.get(email);
+            } else {
+                return null;
+            }
+        } else {
+            throw new NoExisteUsuario("LoginUsuario: No existe el usuario con el que nos hemos logueado");
+        }
     }
 
     /**

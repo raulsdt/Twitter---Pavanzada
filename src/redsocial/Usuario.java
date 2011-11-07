@@ -6,6 +6,7 @@ package redsocial;
 
 import java.util.*;
 import Utilidades.Logger;
+import Excepciones.*;
 
 /**
  *
@@ -89,14 +90,18 @@ public class Usuario {
      * @see Introduce un mensaje en el muro del usuario y en el de todos sus amigos
      * @param msg Contenido del mensaje (texto)
      */
-    public void mensajeMuro(String msg) {
+    public void mensajeMuro(String msg) throws MensajeVacio {
         LOGGER.info("Nuevo mensaje en el muro" + msg);
-        Mensaje mensaje = new Mensaje(msg, this);
-        for (int i = 0; i < getAmigos().size(); i++) {
-            UJaenSocial.nuevoMensaje(mensaje);//Agregar el mensaje dentro de la clase UJaenSocial
-            amigos.get(i).recibirMensaje(mensaje);//Llamada a recibir mensaje
+        if (!msg.equals("")) {
+            Mensaje mensaje = new Mensaje(msg, this);
+            for (int i = 0; i < getAmigos().size(); i++) {
+                UJaenSocial.nuevoMensaje(mensaje);//Agregar el mensaje dentro de la clase UJaenSocial
+                amigos.get(i).recibirMensaje(mensaje);//Llamada a recibir mensaje
+            }
+            this.recibirMensaje(mensaje);// El mensaje tambien me lo tengo que enviar a mi mismo
+        } else {
+            throw new MensajeVacio("El mensaje que quiere dar en el muro esta vacio");
         }
-        this.recibirMensaje(mensaje);// El mensaje tambien me lo tengo que enviar a mi mismo
 
     }
 
@@ -106,14 +111,14 @@ public class Usuario {
      * @param amigo Usuario al que se le quiere enviar el mensaje
      * @throws Los campos anteriores son obligatorios
      */
-    public void mensajeAmigo(String msg, Usuario amigo) {
-        try {
+    public void mensajeAmigo(String msg, Usuario amigo) throws NoEsAmigo {
+        if (amigo != null) {
             LOGGER.info("Mensaje privado" + amigo.getEmail() + " : " + msg);
             MensajePrivado mensajePrivado = new MensajePrivado(msg, this, amigo);
             UJaenSocial.nuevoMensaje(mensajePrivado);//Agregar el mensaje dentro de la clase UJaenSocial
             amigo.recibirMensaje(mensajePrivado);     //Llamada a recibir mensaje
-        } catch (Exception e) {
-            System.out.println("No se puede enviar ningun mensaje");
+        } else {
+            throw new NoEsAmigo("El usuario introducido no es amigo");
         }
     }
 
@@ -122,34 +127,44 @@ public class Usuario {
      * @param u Usuario del cual se quiere ser amigo
      */
     public void solicitudAmistad(Usuario u) {//Le pido la solicitud de amistad a una pesona
-        u.solicitudesAmistad.add(this);// getSolicitudesAmistad().push(u);
+        if (!existeSolicitudAmigo(u) && !existeAmigo(u) && !u.equals(this)) {
+            u.solicitudesAmistad.add(this);// getSolicitudesAmistad().push(u);
+        }
     }
 
     /**
      * @see Admisión de un amigo, previamente en la lista de solicitudesAmistad
      * @param Usuario a admitir
      */
-    public void admitirAmigo(Usuario u) {//Acepto la solicitud de amistad de otra persona
-        try {
-            LOGGER.info("Admitir a amigo: " + email);
-            ListIterator<Usuario> iterador = u.getSolicitudesAmistad().listIterator();
-            boolean encontrado = false;
+    public void admitirAmigo(Usuario u) throws NoExisteUsuario {//Acepto la solicitud de amistad de otra persona
+
+        LOGGER.info("Admitir a amigo: " + email);
+        ListIterator<Usuario> iterador = u.getSolicitudesAmistad().listIterator();
+        boolean encontrado = false;
 
 
-            while (!encontrado && iterador.hasNext()) {
-                if (iterador.next().equals(u)) {
-                    encontrado = true;
-                    iterador.remove();
-                }
+        while (!encontrado && iterador.hasNext()) {
+            if (iterador.next().equals(u)) {
+                encontrado = true;
+                iterador.remove();
             }
-
+        }
+        if (!encontrado) {
             u.getAmigos().add(this);//o push - u  El me añade como amigo a mi
             amigos.add(u);//Yo lo añado como amigo a él
             solicitudesAmistad.remove(solicitudesAmistad.lastIndexOf(u));
-            
-        } catch (Exception e) {
-            System.out.println("Error al admitir amigo");
+        } else {
+            throw new NoExisteUsuario("El usuario introducido no existe en la lista de solicitud de amistad");
         }
+
+    }
+
+    public boolean existeSolicitudAmigo(Usuario u) {
+        return solicitudesAmistad.contains(u);
+    }
+
+    public boolean existeAmigo(Usuario u) {
+        return amigos.contains(u);
     }
 
     /**
@@ -157,15 +172,11 @@ public class Usuario {
      * @param m Mensaje a recibir
      */
     public void recibirMensaje(Mensaje m) {
-        try {
-            if (m == null) {
-                throw new Exception();
-            }
-            getMensajesRecibidos().add(m);// o push
-            LOGGER.info("Usuario: " + getEmail() + " recibe: " + m.getContenido());
-        } catch (Exception e) {
-            System.out.println("recibirMensaje: No se ha recibido ningun mensaje");
-        }
+
+
+        getMensajesRecibidos().add(m);// o push
+        LOGGER.info("Usuario: " + getEmail() + " recibe: " + m.getContenido());
+
 
     }
 
@@ -181,7 +192,7 @@ public class Usuario {
      * Inserta el email del usuario
      * @param email the email to set
      */
-    public void setEmail(String email) {
+    private void setEmail(String email) {
         this.email = email;
     }
 
@@ -189,7 +200,7 @@ public class Usuario {
      * Nos ofrece la clave del usuario
      * @return the clave
      */
-    public String getClave() {
+    private String getClave() {
         return clave;
     }
 
