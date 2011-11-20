@@ -9,9 +9,12 @@ package redsocial;
  * 
  */
 import Excepciones.NoExisteUsuario;
+import Persistencia.ManejadorJPA;
 import Utilidades.Logger;
 import java.util.*;
 import java.util.List;
+import javax.persistence.*;
+import Excepciones.UsuarioYaRegistrado;
 
 public class UJaenSocial {
 
@@ -31,7 +34,6 @@ public class UJaenSocial {
 
         Usuarios = new HashMap<String, Usuario>();
         Mensajes = new ArrayList<Mensaje>();
-
     }
 
     /**
@@ -39,9 +41,17 @@ public class UJaenSocial {
      * @param u Nuevo usuario a incorporar
      * @throws Campos anteriores requeridos de forma obligatoria
      */
-    public void nuevoUsuario(Usuario u) {
+    public void nuevoUsuario(Usuario u) throws Excepciones.UsuarioYaRegistrado{
         LOGGER.info("Introducido al usuario: " + u.getEmail());
-        Usuarios.put(u.getEmail(), u);
+        if (buscarUsuarioCorreoE(u.getEmail()) == null) {
+            Usuarios.put(u.getEmail(), u);
+            ManejadorJPA.instancia().em.getTransaction().begin();
+            ManejadorJPA.instancia().em.persist(u);
+            ManejadorJPA.instancia().em.getTransaction().commit();
+        }else{
+            throw new Excepciones.UsuarioYaRegistrado("El usuario introducido "
+                    + "ya se encuentra registrado");
+        }
 
     }
 
@@ -54,20 +64,23 @@ public class UJaenSocial {
      */
     public Collection<Usuario> buscarUsuario(String Termino) {
         LOGGER.info("Buscando usuario por: " + Termino);
-        LinkedList<Usuario> devolucion = new LinkedList<Usuario>();
-        Iterator it = Usuarios.entrySet().iterator();
 
-        Map.Entry e;
+        //Iterator it = Usuarios.entrySet().iterator();
+        //return ManejadorJPA.instancia().em.createQuery("select u from Usuario u WHERE descripcion = :descrip", Usuario.class).getResultList();
+        Query q = ManejadorJPA.instancia().em.createQuery("select u from Usuario u WHERE descripcion ='" + Termino + "'");
+        List<Usuario> devolucion = q.getResultList();
+        //TypedQuery<Usuario> usuario= ManejadorJPA.instancia().em.createQuery("select u from Usuario u ", Usuario.class);
+        /*Map.Entry e;
         Usuario o = new Usuario();
         while (it.hasNext()) {
-            e = (Map.Entry) it.next();
-            o = (Usuario) e.getValue();
-            if (o.getDescripcion().contains(Termino)
-                    || o.getNombre().contains(Termino)) {
-                devolucion.add(o);
-            }
-
+        e = (Map.Entry) it.next();
+        o = (Usuario) e.getValue();
+        if (o.getDescripcion().contains(Termino)
+        || o.getNombre().contains(Termino)) {
+        devolucion.add(o);
         }
+        
+        }*/
         return devolucion;
 
     }
@@ -78,8 +91,9 @@ public class UJaenSocial {
      * @return Devuelve el usuario buscado o null en caso de no existir
      */
     public Usuario buscarUsuarioCorreoE(String CorreoE) {
-
-        return Usuarios.get(CorreoE);
+        Usuario user = ManejadorJPA.instancia().em.find(Usuario.class, CorreoE);
+        Usuarios.put(CorreoE, user);
+        return user;
 
 
     }
@@ -111,5 +125,9 @@ public class UJaenSocial {
      */
     public static void nuevoMensaje(Mensaje m) {
         Mensajes.add(m);
+
+        ManejadorJPA.instancia().em.getTransaction().begin();
+        ManejadorJPA.instancia().em.persist(m);
+        ManejadorJPA.instancia().em.getTransaction().commit();
     }
 }

@@ -4,6 +4,12 @@
  */
 package redsocial;
 
+import java.io.Serializable;
+import javax.persistence.Entity;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import Persistencia.*;
+
 /**
  *
  * @author Raul Salazar de Torres
@@ -12,10 +18,16 @@ package redsocial;
  * @file MensajePrivado.java
  * 
  */
-public class MensajePrivado extends Mensaje {
-
+@Entity
+@Table(name="MensajePrivado")
+public class MensajePrivado extends Mensaje implements Serializable {
+    
+    @OneToOne
     private Usuario receptor; //Receptor del mensaje privado   
-
+    
+    public MensajePrivado(){
+        
+    }
     /**
      * @see Constructor de mensaje privado
      * @param Contenido Texto del mensaje privado
@@ -40,5 +52,8 @@ public class MensajePrivado extends Mensaje {
      */
     private void setReceptor(Usuario receptor) {
         this.receptor = receptor;
+        ManejadorJPA.instancia().em.getTransaction().begin();
+        ManejadorJPA.instancia().em.merge(this);
+        ManejadorJPA.instancia().em.getTransaction().commit();
     }
 }

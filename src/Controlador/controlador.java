@@ -15,6 +15,8 @@ package Controlador;
 import Excepciones.MensajeVacio;
 import Excepciones.NoEsAmigo;
 import Excepciones.NoExisteUsuario;
+import Excepciones.UsuarioYaRegistrado;
+import Persistencia.ManejadorJPA;
 import java.util.*;
 import redsocial.*;
 import java.io.*;
@@ -62,9 +64,9 @@ public final class controlador {
                     do {
 
                         String correo = CaptarDatos(11, br);
-                        //System.out.println("Introduzca su clave");
-                        //String clave = br.readLine();
-                        String clave = leerClave();
+                        System.out.println("Introduzca su clave");
+                        String clave = br.readLine();
+                        //String clave = leerClave();
 
                         //Adaptacion a SHA1 
                         usuario = principal.loginUsuario(correo, SHA1.encriptarBase64(clave));
@@ -81,9 +83,9 @@ public final class controlador {
                     String nombre = CaptarDatos(12, br);
                     String descripcion = CaptarDatos(13, br);
 
-                    //System.out.println("Introduzca su clave");
-                    // String clave = br.readLine();
-                    String clave = leerClave();
+                    System.out.println("Introduzca su clave");
+                    String clave = br.readLine();
+                    //String clave = leerClave();
 
                     //Adaptacion a SHA1
                     usuario = new Usuario(correo, SHA1.encriptarBase64(clave), nombre, descripcion);
@@ -96,7 +98,13 @@ public final class controlador {
         } catch (NoExisteUsuario e) {
             System.out.println(e);
             return logueoRegistroInit();
-        } 
+        }catch(UsuarioYaRegistrado e){
+            System.out.println(e);
+            return logueoRegistroInit();
+        } catch (Exception e) {
+            return null;
+        }
+
     }
 
     private static void mostrarTablon(Usuario usuario, BufferedReader br) {
@@ -109,7 +117,7 @@ public final class controlador {
         System.out.println("Descripcion: " + usuario.getDescripcion());
         System.out.println("");
 
-        LinkedList<Mensaje> tablon = new LinkedList<Mensaje>();
+        List<Mensaje> tablon = new LinkedList<Mensaje>();
         tablon = usuario.getMensajesRecibidos();
 
         //***************VISUALIZACION DE TABLON*****************//
@@ -148,6 +156,8 @@ public final class controlador {
     }
 
     private static void menu(Usuario usuario, BufferedReader br) {
+
+
         try {
             String eleccion;
             do {
@@ -191,6 +201,7 @@ public final class controlador {
 
                     case 6:
                         usuario = logueoRegistroInit();
+                        mostrarTablon(usuario, br);
                         break;
 
                 }
@@ -208,9 +219,11 @@ public final class controlador {
 
         InputStreamReader sr = new InputStreamReader(System.in);
         BufferedReader br = new BufferedReader(sr);
+        ManejadorJPA.crearConexion();
         Usuario usuario = new Usuario(logueoRegistroInit());
         mostrarTablon(usuario, br);
         menu(usuario, br);
+        ManejadorJPA.desconectar();
     }
 
     /**
@@ -252,7 +265,7 @@ public final class controlador {
      */
     private static void MostrarListaAmigos(Usuario usuario, BufferedReader br) {
 
-        LinkedList<Usuario> Amigos = new LinkedList<Usuario>();
+        List<Usuario> Amigos = new LinkedList<Usuario>();
         Amigos = usuario.getAmigos();
 
         System.out.println("<<<<<<<<  LISTA DE AMIGOS  >>>>>>>");
@@ -295,7 +308,7 @@ public final class controlador {
     private static void MostratSolicitudesAmistad(Usuario usuario, BufferedReader br) {
 
 
-        LinkedList<Usuario> Peticiones = new LinkedList<Usuario>();
+        List<Usuario> Peticiones = new LinkedList<Usuario>();
         Peticiones = usuario.getSolicitudesAmistad();
 
         System.out.println("<<<<<<<<  LISTA DE SOLICITUDES AMISTAD  >>>>>>>");
@@ -318,7 +331,8 @@ public final class controlador {
 
         if (valida.equalsIgnoreCase("Si")) {
             email = CaptarDatos(3, br);
-            usuario.solicitudAmistad(principal.buscarUsuarioCorreoE(email));
+            Usuario user = new Usuario(principal.buscarUsuarioCorreoE(email));
+            usuario.solicitudAmistad(user);
         }
 
     }
@@ -333,12 +347,11 @@ public final class controlador {
         Collection<Usuario> UsuariosRed = new LinkedList<Usuario>();
         //No estoy muy seguro
         String termino = CaptarDatos(1, br);
-
         UsuariosRed = principal.buscarUsuario(termino);
-        LinkedList<Usuario> u = (LinkedList<Usuario>) UsuariosRed;
+        List<Usuario> u = (List<Usuario>) UsuariosRed;
         int cantidad = 0;
-
         for (int jj = 0; jj < u.size(); jj++) {
+
             if (!u.get(jj).getEmail().equals(usuario.getEmail())) {
                 System.out.println(u.get(jj).getNombre() + " - "
                         + u.get(jj).getEmail() + " - "

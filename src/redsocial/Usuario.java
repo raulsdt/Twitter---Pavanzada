@@ -7,6 +7,19 @@ package redsocial;
 import java.util.*;
 import Utilidades.Logger;
 import Excepciones.*;
+import java.io.Serializable;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import Persistencia.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.Table;
 
 /**
  *
@@ -16,17 +29,33 @@ import Excepciones.*;
  * @file Usuario.java
  * 
  */
-public class Usuario {
+@Entity
+@Table(name="Usuario")
+public class Usuario implements Serializable{
 
     private static final Logger LOGGER = Logger.getLogger("RedSocial"); //Logger
+    @Id
+    @Column(name="email")
     private String email; //Correo electronico del usuario
+    @Column(name="clave")
     private String clave; // Clave del usuario
+    @Column(name="nombre")
     private String nombre; //Nombre del usuario
+    @Column(name="descripcion")
     private String descripcion; //Descripcion del usuario
-    private LinkedList<Usuario> solicitudesAmistad; //Conjunto de peticiones de 
+    
+    @OneToMany
+    @JoinTable(name="solicitudes")
+    private List<Usuario> solicitudesAmistad; //Conjunto de peticiones de 
     //amistad realizadas al usuario
-    private LinkedList<Usuario> amigos;//Conjunto de amigos del usuario
-    private LinkedList<Mensaje> mensajesRecibidos;//Conjunto de mensajes recibidos
+
+    @ManyToMany(cascade= CascadeType.ALL)
+    private List<Usuario> amigos;//Conjunto de amigos del usuario
+    
+    @ManyToMany
+    private List<Mensaje> mensajesRecibidos;//Conjunto de mensajes recibidos
+
+
 
     /**
      * @see Constructor de la clase
@@ -46,6 +75,8 @@ public class Usuario {
         solicitudesAmistad = new LinkedList<Usuario>();
         amigos = new LinkedList<Usuario>();
         mensajesRecibidos = new LinkedList<Mensaje>();
+        
+
     }
 
     /**
@@ -60,6 +91,7 @@ public class Usuario {
         solicitudesAmistad = new LinkedList<Usuario>();
         amigos = new LinkedList<Usuario>();
         mensajesRecibidos = new LinkedList<Mensaje>();
+  
     }
 
     /**
@@ -94,6 +126,7 @@ public class Usuario {
         LOGGER.info("Nuevo mensaje en el muro" + msg);
         if (!msg.equals("")) {
             Mensaje mensaje = new Mensaje(msg, this);
+  
             for (int i = 0; i < getAmigos().size(); i++) {
                 UJaenSocial.nuevoMensaje(mensaje);//Agregar el mensaje dentro de la clase UJaenSocial
                 amigos.get(i).recibirMensaje(mensaje);//Llamada a recibir mensaje
@@ -115,6 +148,7 @@ public class Usuario {
         if (amigo != null) {
             LOGGER.info("Mensaje privado" + amigo.getEmail() + " : " + msg);
             MensajePrivado mensajePrivado = new MensajePrivado(msg, this, amigo);
+
             UJaenSocial.nuevoMensaje(mensajePrivado);//Agregar el mensaje dentro de la clase UJaenSocial
             amigo.recibirMensaje(mensajePrivado);     //Llamada a recibir mensaje
         } else {
@@ -129,6 +163,9 @@ public class Usuario {
     public void solicitudAmistad(Usuario u) {//Le pido la solicitud de amistad a una pesona
         if (!existeSolicitudAmigo(u) && !existeAmigo(u) && !u.equals(this)) {
             u.solicitudesAmistad.add(this);// getSolicitudesAmistad().push(u);
+            ManejadorJPA.instancia().em.getTransaction().begin();
+            ManejadorJPA.instancia().em.merge(u);
+            ManejadorJPA.instancia().em.getTransaction().commit();
         }
     }
 
@@ -139,20 +176,24 @@ public class Usuario {
     public void admitirAmigo(Usuario u) throws NoExisteUsuario {//Acepto la solicitud de amistad de otra persona
 
         LOGGER.info("Admitir a amigo: " + email);
-        ListIterator<Usuario> iterador = u.getSolicitudesAmistad().listIterator();
+        ListIterator<Usuario> iterador = getSolicitudesAmistad().listIterator();
         boolean encontrado = false;
 
 
         while (!encontrado && iterador.hasNext()) {
             if (iterador.next().equals(u)) {
                 encontrado = true;
-                iterador.remove();
+               // iterador.remove();
             }
         }
-        if (!encontrado) {
+        if (encontrado) {
             u.getAmigos().add(this);//o push - u  El me añade como amigo a mi
             amigos.add(u);//Yo lo añado como amigo a él
             solicitudesAmistad.remove(solicitudesAmistad.lastIndexOf(u));
+            ManejadorJPA.instancia().em.getTransaction().begin();
+            ManejadorJPA.instancia().em.merge(this);
+            ManejadorJPA.instancia().em.merge(u);
+            ManejadorJPA.instancia().em.getTransaction().commit();
         } else {
             throw new NoExisteUsuario("El usuario introducido no existe en la lista de solicitud de amistad");
         }
@@ -160,6 +201,7 @@ public class Usuario {
     }
 
     public boolean existeSolicitudAmigo(Usuario u) {
+        
         return solicitudesAmistad.contains(u);
     }
 
@@ -175,6 +217,9 @@ public class Usuario {
 
 
         getMensajesRecibidos().add(m);// o push
+        ManejadorJPA.instancia().em.getTransaction().begin();
+        ManejadorJPA.instancia().em.merge(this);
+        ManejadorJPA.instancia().em.getTransaction().commit();
         LOGGER.info("Usuario: " + getEmail() + " recibe: " + m.getContenido());
 
 
@@ -192,15 +237,19 @@ public class Usuario {
      * Inserta el email del usuario
      * @param email the email to set
      */
-    private void setEmail(String email) {
+    public void setEmail(String email) {
+        
         this.email = email;
+        ManejadorJPA.instancia().em.getTransaction().begin();
+        ManejadorJPA.instancia().em.merge(this);
+        ManejadorJPA.instancia().em.getTransaction().commit();
     }
 
     /**
      * Nos ofrece la clave del usuario
      * @return the clave
      */
-    private String getClave() {
+    protected String getClave() {
         return clave;
     }
 
@@ -210,6 +259,9 @@ public class Usuario {
      */
     public void setClave(String clave) {
         this.clave = clave;
+        ManejadorJPA.instancia().em.getTransaction().begin();
+        ManejadorJPA.instancia().em.merge(this);
+        ManejadorJPA.instancia().em.getTransaction().commit();
     }
 
     /**
@@ -226,13 +278,16 @@ public class Usuario {
      */
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+        ManejadorJPA.instancia().em.getTransaction().begin();
+        ManejadorJPA.instancia().em.merge(this);
+        ManejadorJPA.instancia().em.getTransaction().commit();
     }
 
     /**
      * Nos aporta la lista de solicitudes de amistad de un usuario
      * @return the solicitudesAmistad
      */
-    public LinkedList<Usuario> getSolicitudesAmistad() {
+    public List<Usuario> getSolicitudesAmistad() {
         return solicitudesAmistad;
     }
 
@@ -240,7 +295,7 @@ public class Usuario {
      * Nos aporta la lista de amigos de un usuario
      * @return the amigos
      */
-    public LinkedList<Usuario> getAmigos() {
+    public List<Usuario> getAmigos() {
         return amigos;
     }
 
@@ -248,7 +303,7 @@ public class Usuario {
      * Obtener la lista de mensajes recibidos
      * @return the mensajesRecibidos
      */
-    public LinkedList<Mensaje> getMensajesRecibidos() {
+    public List<Mensaje> getMensajesRecibidos() {
         return mensajesRecibidos;
     }
 

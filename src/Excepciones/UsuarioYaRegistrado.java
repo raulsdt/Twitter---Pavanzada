@@ -8,8 +8,8 @@ package Excepciones;
  *
  * @author raul
  */
-public class MensajeVacio extends RuntimeException {
-    public MensajeVacio(String e){
+public class UsuarioYaRegistrado extends RuntimeException {
+    public UsuarioYaRegistrado(String e){
         System.out.println(e);
     }
 }

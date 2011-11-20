@@ -8,8 +8,8 @@ package Excepciones;
  *
  * @author raul
  */
-public class MensajeVacio extends RuntimeException {
-    public MensajeVacio(String e){
+public class ErrorConexionBD extends RuntimeException {
+    public ErrorConexionBD(String e ){
         System.out.println(e);
     }
 }
