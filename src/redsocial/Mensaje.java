@@ -52,6 +52,7 @@ public class Mensaje implements Serializable {
         fecha = new Date();
         this.setContenido(contenido);
         this.setEmisor(aUsuario);
+
         
         
     }

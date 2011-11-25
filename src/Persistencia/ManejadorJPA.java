@@ -44,15 +44,12 @@ public class ManejadorJPA {
     
     public static void desconectar() throws ErrorConexionBD{
         if(instancia!=null){
-            instancia.em.getTransaction().begin();
-            instancia.em.createNativeQuery("shutdown").executeUpdate();
-            instancia.em.getTransaction().commit();
-            
+
             instancia.em.close();
             instancia.emf.close();
             instancia = null;
         }else{
-            throw new ErrorConexionBD("No hay ninguna conexion establecidad");
-        }
+          throw new ErrorConexionBD("No hay ninguna conexion establecidad");
+       }
     }
 }

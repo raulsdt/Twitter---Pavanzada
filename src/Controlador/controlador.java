@@ -64,9 +64,9 @@ public final class controlador {
                     do {
 
                         String correo = CaptarDatos(11, br);
-                        System.out.println("Introduzca su clave");
-                        String clave = br.readLine();
-                        //String clave = leerClave();
+                        //System.out.println("Introduzca su clave");
+                        //String clave = br.readLine();
+                        String clave = leerClave();
 
                         //Adaptacion a SHA1 
                         usuario = principal.loginUsuario(correo, SHA1.encriptarBase64(clave));
@@ -83,9 +83,9 @@ public final class controlador {
                     String nombre = CaptarDatos(12, br);
                     String descripcion = CaptarDatos(13, br);
 
-                    System.out.println("Introduzca su clave");
-                    String clave = br.readLine();
-                    //String clave = leerClave();
+                    //System.out.println("Introduzca su clave");
+                    //String clave = br.readLine();
+                    String clave = leerClave();
 
                     //Adaptacion a SHA1
                     usuario = new Usuario(correo, SHA1.encriptarBase64(clave), nombre, descripcion);
@@ -101,9 +101,10 @@ public final class controlador {
         }catch(UsuarioYaRegistrado e){
             System.out.println(e);
             return logueoRegistroInit();
-        } catch (Exception e) {
-            return null;
         }
+//        } catch (Exception e) {
+//            return null;
+//        }
 
     }
 
@@ -128,7 +129,7 @@ public final class controlador {
         for (int i = 0; i < tablon.size(); i++) {
             if (!(tablon.get(i) instanceof MensajePrivado)) {
                 j++;
-                System.out.println(" <<<<<<<     Mensaje:" + j + "   >>>>>> "
+                System.out.println(" <<<<<<<     Mensaje: " + j + "   >>>>>> "
                         + tablon.get(i).getEmisor().getNombre() + ":  "
                         + tablon.get(i).getContenido());
             }

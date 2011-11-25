@@ -14,6 +14,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import Persistencia.*;
+import javax.management.Query;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.FetchType;
@@ -30,32 +31,27 @@ import javax.persistence.Table;
  * 
  */
 @Entity
-@Table(name="Usuario")
-public class Usuario implements Serializable{
+@Table(name = "Usuario")
+public class Usuario implements Serializable {
 
     private static final Logger LOGGER = Logger.getLogger("RedSocial"); //Logger
     @Id
-    @Column(name="email")
+    @Column(name = "email")
     private String email; //Correo electronico del usuario
-    @Column(name="clave")
+    @Column(name = "clave")
     private String clave; // Clave del usuario
-    @Column(name="nombre")
+    @Column(name = "nombre")
     private String nombre; //Nombre del usuario
-    @Column(name="descripcion")
+    @Column(name = "descripcion")
     private String descripcion; //Descripcion del usuario
-    
-    @OneToMany
-    @JoinTable(name="solicitudes")
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "solicitudes")
     private List<Usuario> solicitudesAmistad; //Conjunto de peticiones de 
     //amistad realizadas al usuario
-
-    @ManyToMany(cascade= CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Usuario> amigos;//Conjunto de amigos del usuario
-    
-    @ManyToMany
+    @OneToMany(fetch = FetchType.LAZY) //No se puede poner perezoso porque nada mas cargar muestro todos los mensajes
     private List<Mensaje> mensajesRecibidos;//Conjunto de mensajes recibidos
-
-
 
     /**
      * @see Constructor de la clase
@@ -75,7 +71,7 @@ public class Usuario implements Serializable{
         solicitudesAmistad = new LinkedList<Usuario>();
         amigos = new LinkedList<Usuario>();
         mensajesRecibidos = new LinkedList<Mensaje>();
-        
+
 
     }
 
@@ -91,7 +87,7 @@ public class Usuario implements Serializable{
         solicitudesAmistad = new LinkedList<Usuario>();
         amigos = new LinkedList<Usuario>();
         mensajesRecibidos = new LinkedList<Mensaje>();
-  
+
     }
 
     /**
@@ -104,9 +100,9 @@ public class Usuario implements Serializable{
         this.nombre = u.nombre;
         this.descripcion = u.descripcion;
 
-        solicitudesAmistad = new LinkedList<Usuario>();
-        amigos = new LinkedList<Usuario>();
-        mensajesRecibidos = new LinkedList<Mensaje>();
+        solicitudesAmistad = new LinkedList<Usuario>(u.solicitudesAmistad);
+        amigos = new LinkedList<Usuario>(u.amigos);
+        mensajesRecibidos = new LinkedList<Mensaje>(u.mensajesRecibidos);
     }
 
     /**
@@ -126,9 +122,9 @@ public class Usuario implements Serializable{
         LOGGER.info("Nuevo mensaje en el muro" + msg);
         if (!msg.equals("")) {
             Mensaje mensaje = new Mensaje(msg, this);
-  
+            //UJaenSocial.nuevoMensaje(mensaje);//Agregar el mensaje dentro de la clase UJaenSocial
             for (int i = 0; i < getAmigos().size(); i++) {
-                UJaenSocial.nuevoMensaje(mensaje);//Agregar el mensaje dentro de la clase UJaenSocial
+
                 amigos.get(i).recibirMensaje(mensaje);//Llamada a recibir mensaje
             }
             this.recibirMensaje(mensaje);// El mensaje tambien me lo tengo que enviar a mi mismo
@@ -183,7 +179,7 @@ public class Usuario implements Serializable{
         while (!encontrado && iterador.hasNext()) {
             if (iterador.next().equals(u)) {
                 encontrado = true;
-               // iterador.remove();
+                // iterador.remove();
             }
         }
         if (encontrado) {
@@ -201,12 +197,23 @@ public class Usuario implements Serializable{
     }
 
     public boolean existeSolicitudAmigo(Usuario u) {
-        
-        return solicitudesAmistad.contains(u);
+
+        for (int i = 0; i < solicitudesAmistad.size(); i++) {
+            if (solicitudesAmistad.get(i).email.equals(u.email)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean existeAmigo(Usuario u) {
-        return amigos.contains(u);
+        for (int i = 0; i < amigos.size(); i++) {
+            if (amigos.get(i).email.equals(u.email)) {
+                return true;
+            }
+        }
+        return false;
+
     }
 
     /**
@@ -216,7 +223,7 @@ public class Usuario implements Serializable{
     public void recibirMensaje(Mensaje m) {
 
 
-        getMensajesRecibidos().add(m);// o push
+        mensajesRecibidos.add(m);// o push modificadoo //getMensajesRecibidosss
         ManejadorJPA.instancia().em.getTransaction().begin();
         ManejadorJPA.instancia().em.merge(this);
         ManejadorJPA.instancia().em.getTransaction().commit();
@@ -238,7 +245,7 @@ public class Usuario implements Serializable{
      * @param email the email to set
      */
     public void setEmail(String email) {
-        
+
         this.email = email;
         ManejadorJPA.instancia().em.getTransaction().begin();
         ManejadorJPA.instancia().em.merge(this);
@@ -304,6 +311,8 @@ public class Usuario implements Serializable{
      * @return the mensajesRecibidos
      */
     public List<Mensaje> getMensajesRecibidos() {
+        //Query q = ManejadorJPA.instancia().em.createQuery("select u from Usuario u WHERE descripcion ='" + Termino + "'");
+        //List<Usuario> devolucion = q.getResultList();
         return mensajesRecibidos;
     }
 

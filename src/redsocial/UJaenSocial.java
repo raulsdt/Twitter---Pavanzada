@@ -125,7 +125,7 @@ public class UJaenSocial {
      */
     public static void nuevoMensaje(Mensaje m) {
         Mensajes.add(m);
-
+        
         ManejadorJPA.instancia().em.getTransaction().begin();
         ManejadorJPA.instancia().em.persist(m);
         ManejadorJPA.instancia().em.getTransaction().commit();
