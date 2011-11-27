@@ -50,7 +50,7 @@ public class Usuario implements Serializable {
     //amistad realizadas al usuario
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Usuario> amigos;//Conjunto de amigos del usuario
-    @OneToMany(fetch = FetchType.LAZY) //No se puede poner perezoso porque nada mas cargar muestro todos los mensajes
+    @ManyToMany(fetch = FetchType.LAZY) //No se puede poner perezoso porque nada mas cargar muestro todos los mensajes
     private List<Mensaje> mensajesRecibidos;//Conjunto de mensajes recibidos
 
     /**
@@ -122,7 +122,7 @@ public class Usuario implements Serializable {
         LOGGER.info("Nuevo mensaje en el muro" + msg);
         if (!msg.equals("")) {
             Mensaje mensaje = new Mensaje(msg, this);
-            //UJaenSocial.nuevoMensaje(mensaje);//Agregar el mensaje dentro de la clase UJaenSocial
+            UJaenSocial.nuevoMensaje(mensaje);//Agregar el mensaje dentro de la clase UJaenSocial
             for (int i = 0; i < getAmigos().size(); i++) {
 
                 amigos.get(i).recibirMensaje(mensaje);//Llamada a recibir mensaje
