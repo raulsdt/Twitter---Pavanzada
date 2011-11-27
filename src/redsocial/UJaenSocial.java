@@ -67,7 +67,7 @@ public class UJaenSocial {
 
         //Iterator it = Usuarios.entrySet().iterator();
         //return ManejadorJPA.instancia().em.createQuery("select u from Usuario u WHERE descripcion = :descrip", Usuario.class).getResultList();
-        Query q = ManejadorJPA.instancia().em.createQuery("select u from Usuario u WHERE descripcion ='" + Termino + "'");
+        Query q = ManejadorJPA.instancia().em.createQuery("select u from Usuario u WHERE descripcion LIKE '%" + Termino + "%' OR  nombre LIKE '%"  + Termino + "%'");
         List<Usuario> devolucion = q.getResultList();
         //TypedQuery<Usuario> usuario= ManejadorJPA.instancia().em.createQuery("select u from Usuario u ", Usuario.class);
         /*Map.Entry e;
