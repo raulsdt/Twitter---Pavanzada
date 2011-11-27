@@ -123,6 +123,7 @@ public class Usuario implements Serializable {
         if (!msg.equals("")) {
             Mensaje mensaje = new Mensaje(msg, this);
             UJaenSocial.nuevoMensaje(mensaje);//Agregar el mensaje dentro de la clase UJaenSocial
+
             for (int i = 0; i < getAmigos().size(); i++) {
 
                 amigos.get(i).recibirMensaje(mensaje);//Llamada a recibir mensaje

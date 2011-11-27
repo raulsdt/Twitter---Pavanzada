@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import Persistencia.*;
+import javax.persistence.JoinTable;
 
 /**
  *
@@ -52,8 +53,8 @@ public class MensajePrivado extends Mensaje implements Serializable {
      */
     private void setReceptor(Usuario receptor) {
         this.receptor = receptor;
-        ManejadorJPA.instancia().em.getTransaction().begin();
-        ManejadorJPA.instancia().em.merge(this);
-        ManejadorJPA.instancia().em.getTransaction().commit();
+//        ManejadorJPA.instancia().em.getTransaction().begin();
+//        ManejadorJPA.instancia().em.merge(this);
+//        ManejadorJPA.instancia().em.getTransaction().commit();
     }
 }

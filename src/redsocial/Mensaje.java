@@ -11,6 +11,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -78,9 +79,9 @@ public class Mensaje implements Serializable {
      */ 
     private void setEmisor(Usuario aUsuario) {
         this.emisor = aUsuario;
-        ManejadorJPA.instancia().em.getTransaction().begin();
-        ManejadorJPA.instancia().em.merge(this);
-        ManejadorJPA.instancia().em.getTransaction().commit();
+//        ManejadorJPA.instancia().em.getTransaction().begin();
+//        ManejadorJPA.instancia().em.merge(this);
+//        ManejadorJPA.instancia().em.getTransaction().commit();
     }
 
     /**
@@ -97,9 +98,9 @@ public class Mensaje implements Serializable {
      */
     protected void setContenido(String contenido) {
         this.contenido = contenido;
-        ManejadorJPA.instancia().em.getTransaction().begin();
-        ManejadorJPA.instancia().em.merge(this);
-        ManejadorJPA.instancia().em.getTransaction().commit();
+//        ManejadorJPA.instancia().em.getTransaction().begin();
+//        ManejadorJPA.instancia().em.merge(this);
+//        ManejadorJPA.instancia().em.getTransaction().commit();
     }
 
 
