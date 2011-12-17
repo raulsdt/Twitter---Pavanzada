@@ -44,7 +44,7 @@ public class Usuario implements Serializable {
     private String nombre; //Nombre del usuario
     @Column(name = "descripcion")
     private String descripcion; //Descripcion del usuario
-    @OneToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "solicitudes")
     private List<Usuario> solicitudesAmistad; //Conjunto de peticiones de 
     //amistad realizadas al usuario

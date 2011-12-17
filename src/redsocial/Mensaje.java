@@ -5,6 +5,8 @@
 package redsocial;
 
 import Persistencia.ManejadorJPA;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.util.*;
 import javax.persistence.Column;
@@ -16,6 +18,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 /**
  *
@@ -29,6 +32,8 @@ import javax.persistence.TemporalType;
 @Entity
 @Table(name="Mensaje")
 public class Mensaje implements Serializable {
+    @Transient
+    private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
     @Id
     @GeneratedValue
     protected long idMensaje;
@@ -97,10 +102,20 @@ public class Mensaje implements Serializable {
      * @param contenido the contenido to set
      */
     protected void setContenido(String contenido) {
+        String oldContenido = this.contenido;
         this.contenido = contenido;
 //        ManejadorJPA.instancia().em.getTransaction().begin();
 //        ManejadorJPA.instancia().em.merge(this);
 //        ManejadorJPA.instancia().em.getTransaction().commit();
+        changeSupport.firePropertyChange("contenido", oldContenido, contenido);
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        changeSupport.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        changeSupport.removePropertyChangeListener(listener);
     }
 
 

@@ -26,6 +26,7 @@ public class UJaenSocial {
     private HashMap<String, Usuario> Usuarios;
     private static List<Mensaje> Mensajes;
 
+   
     /**
      * @see Contructor de la clase
      */
@@ -35,20 +36,26 @@ public class UJaenSocial {
         Usuarios = new HashMap<String, Usuario>();
         Mensajes = new ArrayList<Mensaje>();
     }
+    
+    //Clase copia de prueba;
+    public UJaenSocial(UJaenSocial uj){
+        Usuarios = new HashMap<String, Usuario>(uj.Usuarios);
+        Mensajes = new LinkedList<Mensaje>(uj.Mensajes);
+    }
 
     /**
      * @see Introduce un Usuario nuevo dentro de la lista de usuarios
      * @param u Nuevo usuario a incorporar
      * @throws Campos anteriores requeridos de forma obligatoria
      */
-    public void nuevoUsuario(Usuario u) throws Excepciones.UsuarioYaRegistrado{
+    public void nuevoUsuario(Usuario u) throws Excepciones.UsuarioYaRegistrado {
         LOGGER.info("Introducido al usuario: " + u.getEmail());
         if (buscarUsuarioCorreoE(u.getEmail()) == null) {
             Usuarios.put(u.getEmail(), u);
             ManejadorJPA.instancia().em.getTransaction().begin();
             ManejadorJPA.instancia().em.persist(u);
             ManejadorJPA.instancia().em.getTransaction().commit();
-        }else{
+        } else {
             throw new Excepciones.UsuarioYaRegistrado("El usuario introducido "
                     + "ya se encuentra registrado");
         }
@@ -67,7 +74,7 @@ public class UJaenSocial {
 
         //Iterator it = Usuarios.entrySet().iterator();
         //return ManejadorJPA.instancia().em.createQuery("select u from Usuario u WHERE descripcion = :descrip", Usuario.class).getResultList();
-        Query q = ManejadorJPA.instancia().em.createQuery("select u from Usuario u WHERE descripcion LIKE '%" + Termino + "%' OR  nombre LIKE '%"  + Termino + "%'");
+        Query q = ManejadorJPA.instancia().em.createQuery("select u from Usuario u WHERE descripcion LIKE '%" + Termino + "%' OR  nombre LIKE '%" + Termino + "%'");
         List<Usuario> devolucion = q.getResultList();
         //TypedQuery<Usuario> usuario= ManejadorJPA.instancia().em.createQuery("select u from Usuario u ", Usuario.class);
         /*Map.Entry e;
@@ -84,7 +91,20 @@ public class UJaenSocial {
         return devolucion;
 
     }
+    
+    //Clase busca en prueba
+    public Collection<Usuario> buscarUsuarioporNombre(String Termino) {
+        LOGGER.info("Buscando usuario con nombre: " + Termino);
 
+        Query q = ManejadorJPA.instancia().em.createQuery("select u from Usuario u WHERE nombre = '" + Termino + "'");
+        List<Usuario> devolucion = q.getResultList();
+        
+        return devolucion;
+
+    }
+
+
+    
     /**
      * @see Busqueda mediante correo electronico
      * @param CorreoE Correo electronico de la persona en cuestion
@@ -92,8 +112,12 @@ public class UJaenSocial {
      */
     public Usuario buscarUsuarioCorreoE(String CorreoE) {
         Usuario user = ManejadorJPA.instancia().em.find(Usuario.class, CorreoE);
-        Usuarios.put(CorreoE, user);
-        return user;
+        if (user != null) {
+            Usuarios.put(CorreoE, user);
+            return user;
+        } else {
+            return null;
+        }
 
 
     }
@@ -115,7 +139,7 @@ public class UJaenSocial {
                 return null;
             }
         } else {
-            throw new NoExisteUsuario("LoginUsuario: No existe el usuario con el que nos hemos logueado");
+            throw new Excepciones.NoExisteUsuario("LoginUsuario: No existe el usuario con el que nos hemos logueado");
         }
     }
 
@@ -125,7 +149,7 @@ public class UJaenSocial {
      */
     public static void nuevoMensaje(Mensaje m) {
         Mensajes.add(m);
-        
+
         ManejadorJPA.instancia().em.getTransaction().begin();
         ManejadorJPA.instancia().em.persist(m);
         ManejadorJPA.instancia().em.getTransaction().commit();
